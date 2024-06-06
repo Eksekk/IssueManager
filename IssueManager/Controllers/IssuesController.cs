@@ -99,21 +99,30 @@ namespace IssueManager.Controllers
                 return NotFound();
             }
 
-            if (issue.Status is null)
-            {
-                ModelState.AddModelError("Status", "Status is required");
-            }
-            else if (!Enum.IsDefined(typeof(IssueStatus), issue.Status))
+//             if (issue.Status == null)
+//             {
+//                 ModelState.AddModelError("Status", "Status is required");
+//             }
+            /*else */if (!Enum.IsDefined(typeof(IssueStatus), issue.Status))
             {
                 ModelState.AddModelError("Status", "Invalid status");
             }
 
             if (ModelState.IsValid)
             {
+                // find an entity with original id passed in url
+                var originalIssue = await _context.Issue.FindAsync(id);
+                if (originalIssue == null)
+                {
+                    return NotFound();
+                }
+                issue.SubmitDate = originalIssue.SubmitDate;
+                issue.CloseDate = originalIssue.CloseDate;
                 // every edit action updates the LastUpdateDate
                 issue.LastUpdateDate = DateTime.Now;
                 try
                 {
+                    _context.ChangeTracker.Clear(); // prevent EF error "The instance of entity type cannot be tracked because another instance with the same key value for {'Id'} is already being tracked"
                     _context.Update(issue);
                     await _context.SaveChangesAsync();
                 }

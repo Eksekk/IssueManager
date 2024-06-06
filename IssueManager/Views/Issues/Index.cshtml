@@ -64,7 +64,9 @@
                 @Html.DisplayFor(modelItem => item.LastUpdateDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                <!-- this workaround is needed, because you can't call a method in a lambda expression -->
+                @{var str = Issue.getIssueStatusEnumText((IssueStatus)item.Status);}
+                @Html.DisplayFor(modelItem => str)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

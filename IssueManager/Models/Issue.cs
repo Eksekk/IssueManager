@@ -57,6 +57,7 @@ namespace IssueManager.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        [DisplayName("Code snippet")]
         public string? CodeSnippet { get; set; }
         public string? Author { get; set; }
         [DisplayName("Submit date")]
@@ -65,18 +66,32 @@ namespace IssueManager.Models
         public DateTime? CloseDate { get; set; }
         [DisplayName("Last update date")]
         public DateTime? LastUpdateDate { get; set; }
-        public IssueStatus? Status { get; set; } // TODO: make non-nullable
+        public IssueStatus Status { get; set; } // TODO: make non-nullable
+        public Project project { get; set; }
 
-        public static List<SelectListItem> getStatusEnumValues()
+        public List<Comment> Comments { get; set; }
+
+        public static string getIssueStatusEnumText(IssueStatus status)
+        {
+            return EnumHelpers.GetValueName(status);
+        }
+
+        public static List<SelectListItem> getStatusEnumValuesSelectList()
         {
             return EnumHelpers.GetValuesWithNames<IssueStatus>().Select(pair => new SelectListItem(pair.Value, pair.Key.ToString())).ToList();
         }
 
-        public static List<SelectListItem> getStatusEnumValuesWithPlaceholder(string text)
+        public static List<SelectListItem> getStatusEnumValuesSelectListWithPlaceholder(string text)
         {
-            var list = getStatusEnumValues();
+            var list = getStatusEnumValuesSelectList();
             list.Prepend(new SelectListItem(text, "", true, true));
             return list;
+        }
+
+        // this simple method is there just for abstraction, so views don't have to directly use EnumHelpers method
+        public static Dictionary<IssueStatus, string> getStatusEnumValuesDictionary()
+        {
+            return EnumHelpers.GetValuesWithNames<IssueStatus>();
         }
     }
 }
