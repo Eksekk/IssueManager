@@ -20,10 +20,12 @@ namespace IssueManager.Controllers
         }
 
         // GET: Issues
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? projectId)
         {
-            return View(await _context.Issue.ToListAsync());
+            var list = await _context.Issue.Where(i => projectId == null || i.project.Id == projectId).ToListAsync();
+            return View(list);
         }
+//
 
         // GET: Issues/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -10,8 +10,8 @@ namespace IssueManager.Models
             using (var context = new IssueManagerContext(
                                provider.GetRequiredService<DbContextOptions<IssueManagerContext>>()))
             {
-                // Look for any issues.
-                if (context.Issue.Any())
+                // Look for any projects.
+                if (context.Project.Any())
                 {
                     return;   // DB has been seeded
                 }
@@ -60,7 +60,8 @@ namespace IssueManager.Models
                     }
                 };
 
-                context.Issue.AddRange(
+                List<Issue> issues = new()
+                {
                     new Issue
                     {
                         Title = "Issue 1",
@@ -93,13 +94,13 @@ namespace IssueManager.Models
                         LastUpdateDate = DateTime.Parse("2024-06-05"),
                         CloseDate = null
                     }
-                );
+                };
 
                 var project = new Project
                 {
                     Name = "Project 1",
                     Description = "Description 1",
-                    Issues = [.. context.Issue] // this weird syntax makes a list from DbSet
+                    Issues = issues
                 };
 
                 context.Project.AddRange(project);
