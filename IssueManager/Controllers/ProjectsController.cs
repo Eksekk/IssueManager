@@ -10,148 +10,165 @@ using IssueManager.Models;
 
 namespace IssueManager.Controllers
 {
-    public class ProjectsController : Controller
-    {
-        private readonly IssueManagerContext _context;
+	public class ProjectsController : Controller
+	{
+		private readonly IssueManagerContext _context;
 
-        public ProjectsController(IssueManagerContext context)
-        {
-            _context = context;
+		public ProjectsController(IssueManagerContext context)
+		{
+			_context = context;
+		}
+
+		// GET: Projects
+		public async Task<IActionResult> Index()
+		{
+			return View(await _context.Project.Include(p => p.Issues).ToListAsync());
         }
 
-        // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Project.Include(p => p.Issues).ToListAsync());
-        }
+		// GET: Projects/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // GET: Projects/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			var project = await _context.Project
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (project == null)
+			{
+				return NotFound();
+			}
 
-            var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
-            {
-                return NotFound();
-            }
+			return View(project);
+		}
 
-            return View(project);
-        }
+		// GET: Projects/Create
+		public IActionResult Create()
+		{
+			return View();
+		}
 
-        // GET: Projects/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+		// POST: Projects/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
+		{
+			if (ModelState.IsValid)
+			{
+				_context.Add(project);
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(Index));
+			}
+			return View(project);
+		}
 
-        // POST: Projects/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(project);
-        }
+		// GET: Projects/Edit/5
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			var project = await _context.Project.FindAsync(id);
+			if (project == null)
+			{
+				return NotFound();
+			}
+			return View(project);
+		}
 
-            var project = await _context.Project.FindAsync(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-            return View(project);
-        }
+		// POST: Projects/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
+		{
+			if (id != project.Id)
+			{
+				return NotFound();
+			}
 
-        // POST: Projects/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
-        {
-            if (id != project.Id)
-            {
-                return NotFound();
-            }
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_context.Update(project);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!ProjectExists(project.Id))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(project);
+		}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProjectExists(project.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(project);
-        }
+		// GET: Projects/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			var project = await _context.Project
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (project == null)
+			{
+				return NotFound();
+			}
 
-            var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
-            {
-                return NotFound();
-            }
+			return View(project);
+		}
 
-            return View(project);
-        }
+		// POST: Projects/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var project = await _context.Project.FindAsync(id);
+			if (project != null)
+			{
+				/*
+                 copilot:
+                Note that for the cascading delete to work, you need to have set up your database schema correctly. In Entity Framework, you can configure cascading deletes in the OnModelCreating method in your DbContext class:
+                protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Project>()
+        .HasMany(p => p.Tasks)
+        .WithOne(t => t.Project)
+        .OnDelete(DeleteBehavior.Cascade);
+}
+*/
+				ViewData["msg"] = $"Project '{project.Name}' deleted successfully";
+				var projectToRemove = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
+				_context.Project.Remove(projectToRemove);
+			}
+			else
+			{
+				ViewData["msg"] = $"Project requested to be deleted doesn't exist";
+			}
 
-        // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var project = await _context.Project.FindAsync(id);
-            if (project != null)
-            {
-                _context.Project.Remove(project);
-            }
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProjectExists(int id)
-        {
-            return _context.Project.Any(e => e.Id == id);
-        }
-    }
+		private bool ProjectExists(int id)
+		{
+			return _context.Project.Any(e => e.Id == id);
+		}
+	}
 }

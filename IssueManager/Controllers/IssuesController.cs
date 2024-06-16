@@ -22,7 +22,7 @@ namespace IssueManager.Controllers
         // GET: Issues
         public async Task<IActionResult> Index(int? projectId)
         {
-            var list = await _context.Issue.Where(i => projectId == null || i.project.Id == projectId).ToListAsync();
+            var list = await _context.Issue.Where(i => projectId == null || i.project.Id == projectId).Include(i => i.Comments).Include(i => i.project).ToListAsync();
             return View(list);
         }
 //

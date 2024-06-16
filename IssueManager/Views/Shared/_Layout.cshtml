@@ -38,6 +38,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @{ if (ViewData.ContainsKey("msg")) { <div class="alert alert-info" role="alert">@ViewData["msg"]</div> } }
             @RenderBody()
         </main>
     </div>

@@ -91,6 +91,18 @@ else
                 @Html.DisplayFor(modelItem => str)
             </td>
             <td>
+                <!--
+                    <a asp-controller="Issues" asp-action="Index" asp-all-route-data="issuesParam">View project issues (issuesCount)</a> |
+                -->
+                    @{
+                        var commentsParam = new Dictionary<string, string>
+                        {
+                            { "issueId", item.Id.ToString() }
+                        };
+                        var commentsCount = (item.Comments ?? new()).Count();
+                        // note: to make it not-null we need to use eager loading on Issue list
+                    }
+                <a asp-controller="Comments" asp-route-id="@item.Id" asp-all-route-data="commentsParam">View comments (@commentsCount)</a> |
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
