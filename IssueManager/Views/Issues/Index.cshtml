@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<IssueManager.Models.Issue>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Issue list";
 }
 
 <h1>Index</h1>
@@ -15,10 +15,11 @@
     var pid = Model.Count() > 0 ? Model.First().project?.Id : null;
     if (pid != null && Model.All(issue => issue.project.Id == pid))
 	{
-		<p>Issues for project: @Model.First().project.Name</p>
-	}
-	else
+        <p>Issues for project: @Model.First().project.Name</p>
+    }
+    else
     {
+        pid = null; // update it to null if second check above failed
         <p>All issues:</p>
     }
 }

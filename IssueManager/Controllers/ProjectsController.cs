@@ -92,8 +92,15 @@ namespace IssueManager.Controllers
 			{
 				return NotFound();
 			}
+            // this actually needs to get comments from DB as well, even though they're not used here, otherwise model validation will fail
+            var projectInDb = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
 
-			if (ModelState.IsValid)
+            project.Issues = projectInDb.Issues;
+            // stop tracking second project entity, or error is thrown out
+            _context.Entry(projectInDb).State = EntityState.Detached;
+            ModelState.Clear();
+			TryValidateModel(project);
+            if (ModelState.IsValid)
 			{
 				try
 				{

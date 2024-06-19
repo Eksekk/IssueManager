@@ -1,1 +1,1 @@
-﻿TRUNCATE TABLE dbo.Issue;
+﻿DELETE FROM Comment;
