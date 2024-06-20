@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
+using IssueManager.Static_classes;
 
 namespace IssueManager.Controllers
 {
@@ -54,9 +55,10 @@ namespace IssueManager.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
+		public async Task<IActionResult> Create([Bind("Name,Description")] Project project)
 		{
-			if (ModelState.IsValid)
+			// validate only some fields
+			if (new List<string>{nameof(Project.Name), nameof(Project.Description)}.All(s => ModelState.IsFieldValid(s)))
 			{
 				_context.Add(project);
 				await _context.SaveChangesAsync();
@@ -86,30 +88,29 @@ namespace IssueManager.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
+		public async Task<IActionResult> Edit(int id, [Bind("Name,Description")] Project project)
 		{
-			if (id != project.Id)
-			{
-				return NotFound();
-			}
             // this actually needs to get comments from DB as well, even though they're not used here, otherwise model validation will fail
             var projectInDb = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
+			if (projectInDb is null)
+			{
+                return NotFound();
+            }
+			projectInDb.Name = project.Name;
+            projectInDb.Description = project.Description;
 
-            project.Issues = projectInDb.Issues;
-            // stop tracking second project entity, or error is thrown out
-            _context.Entry(projectInDb).State = EntityState.Detached;
             ModelState.Clear();
-			TryValidateModel(project);
+			TryValidateModel(projectInDb);
             if (ModelState.IsValid)
 			{
 				try
 				{
-					_context.Update(project);
+					_context.Update(projectInDb);
 					await _context.SaveChangesAsync();
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!ProjectExists(project.Id))
+					if (!ProjectExists(projectInDb.Id))
 					{
 						return NotFound();
 					}
@@ -160,14 +161,16 @@ namespace IssueManager.Controllers
         .OnDelete(DeleteBehavior.Cascade);
 }
 */
-				ViewData["msg"] = $"Project '{project.Name}' deleted successfully";
-				var projectToRemove = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
-				_context.Project.Remove(projectToRemove);
-			}
+                var projectToRemove = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
+                _context.Project.Remove(projectToRemove);
+                TempData["msg"] = $"Project '{project.Name}' deleted successfully.";
+                TempData["msgType"] = Constants.GetBootstrapAlertClass(Constants.BootstrapMsgType.Success);
+            }
 			else
 			{
-				ViewData["msg"] = $"Project requested to be deleted doesn't exist";
-			}
+				TempData["msg"] = $"Project requested to be deleted doesn't exist.";
+                TempData["msgType"] = Constants.GetBootstrapAlertClass(Constants.BootstrapMsgType.Danger);
+            }
 
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));

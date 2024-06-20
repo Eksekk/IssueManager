@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
+using IssueManager.Static_classes;
 
 namespace IssueManager.Controllers
 {
@@ -124,7 +125,8 @@ namespace IssueManager.Controllers
             {
                 if (!TryValidateModel(originalIssue))
                 {
-                    ViewData["msg"] = "Validation failed";
+                    TempData["msg"] = "Validation failed";
+                    TempData["msgType"] = Constants.GetBootstrapAlertClass(Constants.BootstrapMsgType.Danger);
                     return View(issue);
                 }
                 // _context.ChangeTracker.Clear(); // prevent EF error "The instance of entity type cannot be tracked because another instance with the same key value for {'Id'} is already being tracked"
@@ -171,7 +173,8 @@ namespace IssueManager.Controllers
             var issue = await _context.Issue.FindAsync(id);
             if (issue != null)
             {
-                _context.Issue.Remove(issue);
+                var dbIssue = _context.Issue.Include(i => i.Comments).SingleAsync(i => i.Id == id);
+                _context.Remove(dbIssue);
             }
 
             await _context.SaveChangesAsync();

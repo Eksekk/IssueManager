@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using static IssueManager.Static_classes.Constants <!-- import the Constants class -->
+@using static IssueManager.Static_classes.ExtensionMethods
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -38,7 +40,15 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @{ if (ViewData.ContainsKey("msg")) { <div class="alert alert-info" role="alert">@ViewData["msg"]</div> } }
+            @{
+                // have to use TempData here, because ViewData is only retained for next view render OR until RedirectToAction is called
+                // TempData is retained for the next response, even across multiple RedirectToAction calls
+                if (TempData.ContainsKey("msg"))
+                {
+                    string msgClass = TempData.GetValueOrDefault("msgType", "alert-info");
+                    <div class="alert @msgClass" role="alert">@TempData["msg"]</div>
+                }
+            }
             @RenderBody()
         </main>
     </div>
