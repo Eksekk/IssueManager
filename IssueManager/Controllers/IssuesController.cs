@@ -94,54 +94,55 @@ namespace IssueManager.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // SubmitDate CloseDate and LastUpdateDate intentionally omitted from the bind list
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CodeSnippet,Author,Status")] Issue issue)
+        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,CodeSnippet,Author,Status")] Issue issue)
         {
-            if (id != issue.Id)
-            {
-                return NotFound();
-            }
-
-//             if (issue.Status == null)
-//             {
-//                 ModelState.AddModelError("Status", "Status is required");
-//             }
-            /*else */if (!Enum.IsDefined(typeof(IssueStatus), issue.Status))
+            ModelState.Clear(); // we don't care about validation of part of data, we validate the whole entity later
+            //             if (issue.Status == null)
+            //             {
+            //                 ModelState.AddModelError("Status", "Status is required");
+            //             }
+            /*else */
+            if (!Enum.IsDefined(typeof(IssueStatus), issue.Status))
             {
                 ModelState.AddModelError("Status", "Invalid status");
             }
 
-            if (ModelState.IsValid)
+            // find an entity with original id passed in url
+            var originalIssue = await _context.Issue.Include(i => i.project).Include(i => i.Comments).SingleAsync(i => i.Id == id);
+            if (originalIssue == null)
             {
-                // find an entity with original id passed in url
-                var originalIssue = await _context.Issue.FindAsync(id);
-                if (originalIssue == null)
+                return NotFound();
+            }
+            originalIssue.Author = issue.Author;
+            originalIssue.Title = issue.Title;
+            originalIssue.Description = issue.Description;
+            originalIssue.Status = issue.Status;
+            originalIssue.CodeSnippet = issue.CodeSnippet;
+            // every edit action updates the LastUpdateDate
+            originalIssue.LastUpdateDate = DateTime.Now;
+            try
+            {
+                if (!TryValidateModel(originalIssue))
+                {
+                    ViewData["msg"] = "Validation failed";
+                    return View(issue);
+                }
+                // _context.ChangeTracker.Clear(); // prevent EF error "The instance of entity type cannot be tracked because another instance with the same key value for {'Id'} is already being tracked"
+                _context.Update(originalIssue);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!IssueExists(originalIssue.Id))
                 {
                     return NotFound();
                 }
-                issue.SubmitDate = originalIssue.SubmitDate;
-                issue.CloseDate = originalIssue.CloseDate;
-                // every edit action updates the LastUpdateDate
-                issue.LastUpdateDate = DateTime.Now;
-                try
+                else
                 {
-                    _context.ChangeTracker.Clear(); // prevent EF error "The instance of entity type cannot be tracked because another instance with the same key value for {'Id'} is already being tracked"
-                    _context.Update(issue);
-                    await _context.SaveChangesAsync();
+                    throw;
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!IssueExists(issue.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            return View(issue);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Issues/Delete/5
