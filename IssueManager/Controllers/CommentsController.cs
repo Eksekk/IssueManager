@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
+using IssueManager.Static_classes;
 
 namespace IssueManager.Controllers
 {
@@ -22,6 +23,7 @@ namespace IssueManager.Controllers
         // GET: Comments
         public async Task<IActionResult> Index(int? issueId)
         {
+            ViewData["issueId"] = issueId;
             return View(await _context.Comment.Where(c => issueId == null || c.Issue.Id == issueId).ToListAsync());
         }
 
@@ -44,8 +46,9 @@ namespace IssueManager.Controllers
         }
 
         // GET: Comments/Create
-        public IActionResult Create()
+        public IActionResult Create(int? issueId)
         {
+            ViewData["issueId"] = issueId;
             return View();
         }
 
@@ -54,10 +57,16 @@ namespace IssueManager.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Author,Content,SubmitDate")] Comment comment)
+        public async Task<IActionResult> Create([Bind("Author,Content,SubmitDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {
+                if (!int.TryParse(Request.Form["issueId"], out int issueId))
+                {
+                    this.SetTemporaryMessage("Provided issue ID is not a number or is invalid number.", Constants.BootstrapMsgType.Danger);
+                    return RedirectToAction(nameof(Index));
+                }
+                comment.Issue = await _context.Issue.FindAsync(issueId);
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

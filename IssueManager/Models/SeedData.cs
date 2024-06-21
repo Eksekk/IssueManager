@@ -66,7 +66,6 @@ namespace IssueManager.Models
                     {
                         Title = "Issue 1",
                         Description = "Description 1",
-                        CodeSnippet = "CodeSnippet 1",
                         Author = "Author 1",
                         SubmitDate = DateTime.Parse("2024-06-05"),
                         LastUpdateDate = DateTime.Parse("2024-06-05"),
@@ -77,7 +76,6 @@ namespace IssueManager.Models
                     {
                         Title = "Issue 2",
                         Description = "Description 2",
-                        CodeSnippet = "CodeSnippet 2",
                         Author = "Author 2",
                         SubmitDate = DateTime.Parse("2024-06-05"),
                         LastUpdateDate = DateTime.Parse("2024-06-05"),
@@ -88,7 +86,6 @@ namespace IssueManager.Models
                     {
                         Title = "Issue 3",
                         Description = "Description 3",
-                        CodeSnippet = "CodeSnippet 3",
                         Author = "Author 3",
                         SubmitDate = DateTime.Parse("2024-06-05"),
                         LastUpdateDate = DateTime.Parse("2024-06-05"),
@@ -103,9 +100,37 @@ namespace IssueManager.Models
                     Issues = issues
                 };
 
+                
+
                 context.Project.AddRange(project);
                 context.SaveChanges();
             }
+        }
+
+        private static Project getCppProject()
+        {
+            var project = new Project
+            {
+                Name = "Website crawler",
+                Description = "A simple C++ program using Boost.Beast to get useful data from any website."
+            };
+
+            List<Issue> issues = new()
+            {
+                new()
+                {
+                    Title = "Some pages are skipped when crawling",
+                    Description = "Some pages are skipped when crawling, but they should not be. Reason is currently unknown. There are very little such pages, which makes it hard to pinpoint the problem",
+                    Author = "Author 1",
+                    SubmitDate = DateTime.Parse("2024-06-05 8:55"),
+                    LastUpdateDate = DateTime.Parse("2024-06-12 12:23"),
+                    Status = IssueStatus.WORK_IN_PROGRESS
+                }
+            };
+
+            project.Issues = issues;
+
+            return new();
         }
     }
 }

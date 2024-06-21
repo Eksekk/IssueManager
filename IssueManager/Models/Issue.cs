@@ -10,30 +10,32 @@ using System.Text.Json.Serialization;
 
 namespace IssueManager.Models
 {
-//     [JsonConverter(typeof(JsonStringEnumConverter))]
-//     public enum IssueLanguage
-//     {
-//         All,
-//         [EnumText("C#")]
-//         Csharp,
-//         [EnumText("C++")]
-//         Cpp,
-//         Lua,
-//         Python,
-//         Java
-//     }
-//     [JsonConverter(typeof(JsonStringEnumConverter))]
-//     public enum SnippetComplexity
-//     {
-//         Any,
-//         Low,
-//         [EnumText("Medium-low")]
-//         MediumLow,
-//         Medium,
-//         [EnumText("Medium-high")]
-//         MediumHigh,
-//         High
-//     }
+    //     [JsonConverter(typeof(JsonStringEnumConverter))]
+    //     public enum IssueLanguage
+    //     {
+    //         All,
+    //         [EnumText("C#")]
+    //         Csharp,
+    //         [EnumText("C++")]
+    //         Cpp,
+    //         Lua,
+    //         Python,
+    //         Java
+    //     }
+    //     [JsonConverter(typeof(JsonStringEnumConverter))]
+    //     public enum SnippetComplexity
+    //     {
+    //         Any,
+    //         Low,
+    //         [EnumText("Medium-low")]
+    //         MediumLow,
+    //         Medium,
+    //         [EnumText("Medium-high")]
+    //         MediumHigh,
+    //         High
+    //     }
+    // entity framework attribute to store as strings
+
 
     public enum IssueStatus
     {
@@ -41,6 +43,8 @@ namespace IssueManager.Models
         SUBMITTED,
         [EnumText("Acknowledged")]
         ACKNOWLEDGED,
+        [EnumText("Work in progress")]
+        WORK_IN_PROGRESS,
         [EnumText("Cannot reproduce")]
         CANNOT_REPRODUCE,
         [EnumText("Reproduced")]
@@ -57,8 +61,6 @@ namespace IssueManager.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        [DisplayName("Code snippet")]
-        public string? CodeSnippet { get; set; }
         public string? Author { get; set; }
         [DisplayName("Submit date")]
         public DateTime? SubmitDate { get; set; }
@@ -69,7 +71,24 @@ namespace IssueManager.Models
         public IssueStatus Status { get; set; } // TODO: make non-nullable
         public Project project { get; set; }
 
-        public List<Comment> Comments { get; set; }
+        // FIXME: Assignee field as real user!!!
+
+        public List<Comment> _Comments;
+        public List<Comment> Comments
+        {
+            get
+            {
+                return _Comments;
+            }
+            set
+            {
+                _Comments = value;
+                foreach (Comment c in value)
+                {
+                    c.Issue = this;
+                }
+            }
+        }
 
         public static string getIssueStatusEnumText(IssueStatus status)
         {

@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Submit new issue</a>
+    <a asp-action="Create" asp-route-projectId="@ViewData["projectId"]">Submit new issue</a>
 </p>
 
 @{
@@ -42,9 +42,6 @@ else
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CodeSnippet)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Author)
             </th>
             <th>
@@ -70,9 +67,6 @@ else
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CodeSnippet)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Author)

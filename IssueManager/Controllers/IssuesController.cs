@@ -24,6 +24,7 @@ namespace IssueManager.Controllers
         public async Task<IActionResult> Index(int? projectId)
         {
             var list = await _context.Issue.Where(i => projectId == null || i.project.Id == projectId).Include(i => i.Comments).Include(i => i.project).ToListAsync();
+            ViewData["projectId"] = projectId;
             return View(list);
         }
 //
@@ -47,8 +48,9 @@ namespace IssueManager.Controllers
         }
 
         // GET: Issues/Create
-        public IActionResult Create()
+        public IActionResult Create(int projectId)
         {
+            ViewData["projectId"] = projectId;
             return View();
         }
 
@@ -58,19 +60,25 @@ namespace IssueManager.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // values that are assigned below are omitted from bind list
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,CodeSnippet,Author")] Issue issue)
+        public async Task<IActionResult> Create([Bind("Title,Description,Author")] Issue issue)
         {
-            if (ModelState.IsValid)
+            if (!int.TryParse(Request.Form["projectId"], out int projectId))
+            {
+                this.SetTemporaryMessage("Invalid project id", Constants.BootstrapMsgType.Danger);
+                return View(issue);
+            }
+            if (new[] {nameof(Issue.Title), nameof(Issue.Description), nameof(Issue.Author)}.All(s => ModelState.IsFieldValid(s)))
             {
                 issue.SubmitDate = DateTime.Now;
                 issue.LastUpdateDate = DateTime.Now;
                 issue.CloseDate = null;
                 issue.Status = IssueStatus.SUBMITTED;
+                issue.project = _context.Project.FindAsync(projectId).Result;
                 _context.Add(issue);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(issue);
+            return RedirectToAction(nameof(Index), new{ projectId = projectId });
         }
 
         // GET: Issues/Edit/5
@@ -95,7 +103,7 @@ namespace IssueManager.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // SubmitDate CloseDate and LastUpdateDate intentionally omitted from the bind list
-        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,CodeSnippet,Author,Status")] Issue issue)
+        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Author,Status")] Issue issue)
         {
             ModelState.Clear(); // we don't care about validation of part of data, we validate the whole entity later
             //             if (issue.Status == null)
@@ -118,7 +126,6 @@ namespace IssueManager.Controllers
             originalIssue.Title = issue.Title;
             originalIssue.Description = issue.Description;
             originalIssue.Status = issue.Status;
-            originalIssue.CodeSnippet = issue.CodeSnippet;
             // every edit action updates the LastUpdateDate
             originalIssue.LastUpdateDate = DateTime.Now;
             try

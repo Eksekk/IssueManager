@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace IssueManager.Static_classes
@@ -37,6 +38,12 @@ namespace IssueManager.Static_classes
                 return tempData[key];
             }
             return value;
+        }
+        
+        public static void SetTemporaryMessage(this Controller ctr, string msg, Constants.BootstrapMsgType type)
+        {
+            ctr.TempData["msg"] = msg;
+            ctr.TempData["msgType"] = Constants.GetBootstrapAlertClass(type);
         }
     }
 }

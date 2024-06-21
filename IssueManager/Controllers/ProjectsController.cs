@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
 using IssueManager.Static_classes;
+using static IssueManager.Static_classes.ExtensionMethods;
 
 namespace IssueManager.Controllers
 {
@@ -15,7 +16,9 @@ namespace IssueManager.Controllers
 	{
 		private readonly IssueManagerContext _context;
 
-		public ProjectsController(IssueManagerContext context)
+		private void ProjectDoesntExistMsg() => this.SetTemporaryMessage("Provided project doesn't exist in the database.", Constants.BootstrapMsgType.Danger);
+
+        public ProjectsController(IssueManagerContext context)
 		{
 			_context = context;
 		}
@@ -62,9 +65,11 @@ namespace IssueManager.Controllers
 			{
 				_context.Add(project);
 				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+                this.SetTemporaryMessage("Project created successfully.", Constants.BootstrapMsgType.Success);
+                return RedirectToAction(nameof(Index));
 			}
-			return View(project);
+            this.SetTemporaryMessage("Project was not created due to invalid data.", Constants.BootstrapMsgType.Danger);
+            return View(project);
 		}
 
 		// GET: Projects/Edit/5
@@ -94,6 +99,7 @@ namespace IssueManager.Controllers
             var projectInDb = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
 			if (projectInDb is null)
 			{
+				ProjectDoesntExistMsg();
                 return NotFound();
             }
 			projectInDb.Name = project.Name;
@@ -112,15 +118,19 @@ namespace IssueManager.Controllers
 				{
 					if (!ProjectExists(projectInDb.Id))
 					{
-						return NotFound();
+                        // not using ProjectDoesntExistMsg() here, because message is different
+                        this.SetTemporaryMessage("Provided project was asynchronously deleted from the database.", Constants.BootstrapMsgType.Danger);
+                        return NotFound();
 					}
 					else
 					{
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
+                this.SetTemporaryMessage("Project updated successfully.", Constants.BootstrapMsgType.Success);
+                return RedirectToAction(nameof(Index));
 			}
+			this.SetTemporaryMessage("Project was not updated due to invalid data.", Constants.BootstrapMsgType.Danger);
 			return View(project);
 		}
 
@@ -129,14 +139,14 @@ namespace IssueManager.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+                return NotFound();
 			}
 
 			var project = await _context.Project
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (project == null)
 			{
-				return NotFound();
+                return NotFound();
 			}
 
 			return View(project);
@@ -163,13 +173,11 @@ namespace IssueManager.Controllers
 */
                 var projectToRemove = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
                 _context.Project.Remove(projectToRemove);
-                TempData["msg"] = $"Project '{project.Name}' deleted successfully.";
-                TempData["msgType"] = Constants.GetBootstrapAlertClass(Constants.BootstrapMsgType.Success);
+				this.SetTemporaryMessage($"Project '{project.Name}' deleted successfully.", Constants.BootstrapMsgType.Success);
             }
 			else
 			{
-				TempData["msg"] = $"Project requested to be deleted doesn't exist.";
-                TempData["msgType"] = Constants.GetBootstrapAlertClass(Constants.BootstrapMsgType.Danger);
+				this.SetTemporaryMessage("Project requested to be deleted doesn't exist.", Constants.BootstrapMsgType.Danger);
             }
 
 			await _context.SaveChangesAsync();
