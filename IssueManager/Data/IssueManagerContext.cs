@@ -4,23 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using IssueManager.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace IssueManager.Data
 {
-    public class IssueManagerContext : DbContext
+    public class IssueManagerContext : IdentityDbContext
     {
         public IssueManagerContext (DbContextOptions<IssueManagerContext> options)
             : base(options)
         {
         }
 
-        public DbSet<User> User { get; set; } = default!;
+        //public DbSet<User> User { get; set; } = default!;
         public DbSet<IssueManager.Models.Issue> Issue { get; set; } = default!;
         public DbSet<IssueManager.Models.Comment> Comment { get; set; } = default!;
         public DbSet<IssueManager.Models.Project> Project { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Issue>()
                 .Property(i => i.Status)
                 .HasConversion<string>();

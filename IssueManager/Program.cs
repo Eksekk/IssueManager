@@ -2,9 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using IssueManager.Data;
 using IssueManager.Models;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<IssueManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IssueManagerContext") ?? throw new InvalidOperationException("Connection string 'IssueManagerContext' not found.")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<IssueManagerContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
