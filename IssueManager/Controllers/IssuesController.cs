@@ -38,6 +38,7 @@ namespace IssueManager.Controllers
             }
 
             var issue = await _context.Issue
+                .Include(i => i.project)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
@@ -78,7 +79,7 @@ namespace IssueManager.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index), new{ projectId = projectId });
+            return RedirectToAction(nameof(Index), new{ projectId });
         }
 
         // GET: Issues/Edit/5
@@ -126,6 +127,14 @@ namespace IssueManager.Controllers
             originalIssue.Title = issue.Title;
             originalIssue.Description = issue.Description;
             originalIssue.Status = issue.Status;
+            if (originalIssue.Status == IssueStatus.CLOSED)
+            {
+                originalIssue.CloseDate = DateTime.Now;
+            }
+            else
+            {
+                originalIssue.CloseDate = null;
+            }
             // every edit action updates the LastUpdateDate
             originalIssue.LastUpdateDate = DateTime.Now;
             try
