@@ -14,6 +14,7 @@ namespace IssueManager.Data
         {
         }
 
+        public DbSet<User> User { get; set; } = default!;
         public DbSet<IssueManager.Models.Issue> Issue { get; set; } = default!;
         public DbSet<IssueManager.Models.Comment> Comment { get; set; } = default!;
         public DbSet<IssueManager.Models.Project> Project { get; set; } = default!;

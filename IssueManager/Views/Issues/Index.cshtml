@@ -80,7 +80,14 @@ else
                 @Html.DisplayFor(modelItem => item.SubmitDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CloseDate)
+                @if (item.Status == IssueStatus.CLOSED)
+                {
+                    @Html.DisplayFor(modelItem => item.CloseDate)
+                }
+                else
+                {
+                    <text>N/A</text>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastUpdateDate)
