@@ -59,6 +59,7 @@ namespace IssueManager.Models
     public class Issue
     {
         public int Id { get; set; }
+        [DisplayName("Issue Title")] // so that comments view has proper label, don't want to somehow hardcode it in view
         public string Title { get; set; }
         public string Description { get; set; }
         public string? Author { get; set; }

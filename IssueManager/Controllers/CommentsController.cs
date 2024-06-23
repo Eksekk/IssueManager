@@ -24,7 +24,12 @@ namespace IssueManager.Controllers
         public async Task<IActionResult> Index(int? issueId)
         {
             ViewData["issueId"] = issueId;
-            return View(await _context.Comment.Where(c => issueId == null || c.Issue.Id == issueId).ToListAsync());
+            return View(
+                await _context.Comment
+                .Where(c => issueId == null || c.Issue.Id == issueId)
+                .Include(c => c.Issue)
+                .ToListAsync()
+             );
         }
 
         // GET: Comments/Details/5
@@ -36,6 +41,7 @@ namespace IssueManager.Controllers
             }
 
             var comment = await _context.Comment
+                .Include(c => c.Issue)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)
             {

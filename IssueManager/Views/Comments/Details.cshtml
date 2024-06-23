@@ -11,6 +11,13 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
+		    @Html.DisplayNameFor(model => model.Issue.Title)
+        </dt>
+        <dd class="col-sm-10">
+            <!-- "asp-route-..." parameter named exactly as specified in matching route is just the value, without "?name=value" stuff?-->
+            <a asp-action="Details" asp-controller="Issues" asp-route-id="@Model.Issue.Id">@Html.DisplayFor(model => model.Issue.Title)</a>
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Author)
         </dt>
         <dd class = "col-sm-10">

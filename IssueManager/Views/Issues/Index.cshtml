@@ -36,6 +36,9 @@ else
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.project.Name)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
@@ -62,6 +65,8 @@ else
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+				<a asp-controller="Projects" asp-action="Details" asp-route-id="@item.project.Id">@Html.DisplayFor(modelItem => item.project.Name)</a>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
