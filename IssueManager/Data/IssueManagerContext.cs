@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using IssueManager.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace IssueManager.Data
 {
@@ -19,6 +20,8 @@ namespace IssueManager.Data
         public DbSet<IssueManager.Models.Issue> Issue { get; set; } = default!;
         public DbSet<IssueManager.Models.Comment> Comment { get; set; } = default!;
         public DbSet<IssueManager.Models.Project> Project { get; set; } = default!;
+        // dbset of users
+        public DbSet<User> User { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

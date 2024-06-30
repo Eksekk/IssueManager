@@ -5,6 +5,13 @@
 }
 
 <h1>Index</h1>
+<form asp-controller="Comments" asp-action="Index" method="get">
+	<p>
+        <input type="hidden" name="issueId" value="@ViewData["issueId"]" />
+		<input type="text" name="search" value="@ViewData["search"]" placeholder="Search by content" />
+		<input type="submit" value="Search" />
+	</p>
+</form>
 
 <p>
     <a asp-action="Create" asp-route-issueId="@ViewData["issueId"]">Create New</a>

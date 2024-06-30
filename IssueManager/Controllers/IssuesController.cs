@@ -21,9 +21,14 @@ namespace IssueManager.Controllers
         }
 
         // GET: Issues
-        public async Task<IActionResult> Index(int? projectId)
+        public async Task<IActionResult> Index(int? projectId, string search)
         {
-            var list = await _context.Issue.Where(i => projectId == null || i.project.Id == projectId).Include(i => i.Comments).Include(i => i.project).ToListAsync();
+            ViewData["search"] = search;
+            var list = await _context.Issue.Where(i =>
+                (projectId == null
+                    || i.project.Id == projectId)
+                && (string.IsNullOrEmpty(search) || i.Description.Contains(search)))
+                .Include(i => i.Comments).Include(i => i.project).ToListAsync();
             ViewData["projectId"] = projectId;
             return View(list);
         }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
 using IssueManager.Static_classes;
+using System.Linq.Expressions;
 
 namespace IssueManager.Controllers
 {
@@ -21,13 +22,20 @@ namespace IssueManager.Controllers
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index(int? issueId)
+        public async Task<IActionResult> Index(int? issueId, string search/*, bool? byTitle*/)
         {
             ViewData["issueId"] = issueId;
-            return View(
+            ViewData["search"] = search;
+            // search by issue title if byTitle is true, otherwise search by comment content
+            // empty string means no filtering
+            //Expression<Func<Comment, bool>> searchPredicate = c => string.IsNullOrEmpty(search) ? true : 
+                //((byTitle ?? false) ? c.Issue.Title.Contains(search) : c.Content.Contains(search));
+                Expression<Func<Comment, bool>> searchPredicate = c => string.IsNullOrEmpty(search) || c.Content.Contains(search);
+			return View(
                 await _context.Comment
-                .Where(c => issueId == null || c.Issue.Id == issueId)
                 .Include(c => c.Issue)
+                .Where(c => issueId == null || c.Issue.Id == issueId)
+                .Where(searchPredicate)
                 .ToListAsync()
              );
         }
