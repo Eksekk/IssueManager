@@ -72,9 +72,9 @@
             </dt>
 		<dd class="col-sm-10">
             <ul>
-                @foreach (var comment in Model.Comments)
+                @foreach (Comment comment in Model.Comments)
 				{
-                    var content = comment.Content;
+                    string content = comment.Content;
                     bool longerThan100 = content.Length > 100;
                     content = longerThan100 ? content.Substring(0, 100) + "..." : content;
                     <li>
