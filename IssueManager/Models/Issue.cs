@@ -10,33 +10,6 @@ using System.Text.Json.Serialization;
 
 namespace IssueManager.Models
 {
-    //     [JsonConverter(typeof(JsonStringEnumConverter))]
-    //     public enum IssueLanguage
-    //     {
-    //         All,
-    //         [EnumText("C#")]
-    //         Csharp,
-    //         [EnumText("C++")]
-    //         Cpp,
-    //         Lua,
-    //         Python,
-    //         Java
-    //     }
-    //     [JsonConverter(typeof(JsonStringEnumConverter))]
-    //     public enum SnippetComplexity
-    //     {
-    //         Any,
-    //         Low,
-    //         [EnumText("Medium-low")]
-    //         MediumLow,
-    //         Medium,
-    //         [EnumText("Medium-high")]
-    //         MediumHigh,
-    //         High
-    //     }
-    // entity framework attribute to store as strings
-
-
     public enum IssueStatus
     {
         [EnumText("Submitted")]
