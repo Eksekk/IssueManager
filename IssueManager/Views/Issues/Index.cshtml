@@ -145,8 +145,7 @@ else
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
-@{
-    var htmlString = @Html.PagedListPager((X.PagedList.IPagedList)Model, page => Url.Action("Index",
-        new { page, sort = ViewBag.currentSort, currentFilter = ViewBag.currentFilter, projectId = ViewData["projectId"], search = ViewData["search"] }), new());
-    @Html.Raw(htmlString)
-}
+@Html.PagedListPager((X.PagedList.IPagedList)Model, page => Url.Action("Index",
+    new { page, sort = ViewBag.currentSort, currentFilter = ViewBag.currentFilter, projectId = ViewData["projectId"], search = ViewData["search"] }))
+
+<!--<style>ul.pagination > li:after {content: " | ";}</style>-->

@@ -139,6 +139,7 @@ namespace IssueManager.Controllers
 
             var issue = await _context.Issue
                 .Include(i => i.project)
+                .Include(i => i.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
