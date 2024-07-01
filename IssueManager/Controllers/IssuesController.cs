@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IssueManager.Data;
 using IssueManager.Models;
 using IssueManager.Static_classes;
+using X.PagedList;
 
 namespace IssueManager.Controllers
 {
@@ -60,9 +61,22 @@ namespace IssueManager.Controllers
             Desc
         }
         // GET: Issues
-        public async Task<IActionResult> Index(int? projectId, string search, string sort)
+        public async Task<IActionResult> Index(int? projectId, string search, string sort, string currentFilter, int? page)
         {
             ViewData["search"] = search;
+            ViewData["projectId"] = projectId;
+
+            if (search != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                search = currentFilter;
+            }
+            ViewBag.currentFilter = search;
+            ViewBag.currentSort = sort;
+            
             IQueryable<Issue> issues = _context.Issue.Where(i =>
                 (projectId == null
                     || i.project.Id == projectId)
@@ -108,9 +122,9 @@ namespace IssueManager.Controllers
             ViewBag.titleSort = titleSort == EColumnSortStatus.Asc ? "title_desc" : "title";
             ViewBag.statusSort = statusSort == EColumnSortStatus.Asc ? "status_desc" : "status";
 
-
-            var list = await issues.ToListAsync();
-            ViewData["projectId"] = projectId;
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            var list = issues.ToPagedList(pageNumber, pageSize);
             return View(list);
         }
 //

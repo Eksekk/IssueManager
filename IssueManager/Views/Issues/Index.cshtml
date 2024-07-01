@@ -1,4 +1,6 @@
-﻿@model IEnumerable<IssueManager.Models.Issue>
+﻿@model X.PagedList.IPagedList<IssueManager.Models.Issue>
+@using X.PagedList.Mvc.Core;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewData["Title"] = "Issue list";
@@ -60,7 +62,7 @@ else
                 @Html.ActionLink("Title", "Index", "Issues", baseDict.Append(new("sort", ViewBag.titleSort)), null)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model[0].Description)
             </th>
             <th>
                 @{//@Html.DisplayNameFor(model => model.Author)
@@ -68,13 +70,13 @@ else
                 @Html.ActionLink("Author", "Index", "Issues", baseDict.Append(new("sort", ViewBag.authorSort)), null)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SubmitDate)
+                @Html.DisplayNameFor(model => model[0].SubmitDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CloseDate)
+                @Html.DisplayNameFor(model => model[0].CloseDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastUpdateDate)
+                @Html.DisplayNameFor(model => model[0].LastUpdateDate)
             </th>
             <th>
                 @Html.ActionLink("Status", "Index", "Issues", baseDict.Append(new("sort", ViewBag.statusSort)), null)
@@ -138,3 +140,13 @@ else
 }
     </tbody>
 </table>
+
+<!-- setup paging -->
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@{
+    var htmlString = @Html.PagedListPager((X.PagedList.IPagedList)Model, page => Url.Action("Index",
+        new { page, sort = ViewBag.currentSort, currentFilter = ViewBag.currentFilter, projectId = ViewData["projectId"], search = ViewData["search"] }), new());
+    @Html.Raw(htmlString)
+}
