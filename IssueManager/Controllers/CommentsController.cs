@@ -22,14 +22,11 @@ namespace IssueManager.Controllers
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index(int? issueId, string search/*, bool? byTitle*/)
+        public async Task<IActionResult> Index(int? issueId, string search/*, bool? byTitle*/, string sort)
         {
             ViewData["issueId"] = issueId;
             ViewData["search"] = search;
-            // search by issue title if byTitle is true, otherwise search by comment content
             // empty string means no filtering
-            //Expression<Func<Comment, bool>> searchPredicate = c => string.IsNullOrEmpty(search) ? true : 
-                //((byTitle ?? false) ? c.Issue.Title.Contains(search) : c.Content.Contains(search));
                 Expression<Func<Comment, bool>> searchPredicate = c => string.IsNullOrEmpty(search) || c.Content.Contains(search);
 			return View(
                 await _context.Comment

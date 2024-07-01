@@ -20,15 +20,96 @@ namespace IssueManager.Controllers
             _context = context;
         }
 
+        public enum EIssuesSort
+        {
+            AUTHOR,
+            AUTHOR_DESC,
+            TITLE,
+            TITLE_DESC,
+            STATUS,
+            STATUS_DESC,
+        }
+
+        public static readonly Dictionary<string, EIssuesSort> SortOptionsStringToEnum = new() {
+            { "author", EIssuesSort.AUTHOR },
+            { "author_desc", EIssuesSort.AUTHOR_DESC },
+            { "title", EIssuesSort.TITLE },
+            { "title_desc", EIssuesSort.TITLE_DESC },
+            { "status", EIssuesSort.STATUS },
+            { "status_desc", EIssuesSort.STATUS_DESC },
+        };
+
+        public static readonly Dictionary<EIssuesSort, string> SortOptionsEnumToString = SortOptionsStringToEnum.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+
+        public static readonly EIssuesSort SortOptionsDefault = EIssuesSort.TITLE;
+        public static readonly string SortOptionsDefaultString = SortOptionsEnumToString.GetValueOrDefault(SortOptionsDefault);
+
+        private static EIssuesSort? GetSortFromString(string sort) // may be empty
+        {
+            if (string.IsNullOrEmpty(sort))
+            {
+                return null;
+            }
+            return SortOptionsStringToEnum.GetValueOrDefault(sort, SortOptionsDefault);
+        }
+
+        private enum EColumnSortStatus
+        {
+            Absent,
+            Asc,
+            Desc
+        }
         // GET: Issues
-        public async Task<IActionResult> Index(int? projectId, string search)
+        public async Task<IActionResult> Index(int? projectId, string search, string sort)
         {
             ViewData["search"] = search;
-            var list = await _context.Issue.Where(i =>
+            IQueryable<Issue> issues = _context.Issue.Where(i =>
                 (projectId == null
                     || i.project.Id == projectId)
                 && (string.IsNullOrEmpty(search) || i.Description.Contains(search)))
-                .Include(i => i.Comments).Include(i => i.project).ToListAsync();
+                .Include(i => i.Comments).Include(i => i.project);
+
+            var sortType = GetSortFromString(sort);
+            EColumnSortStatus authorSort = EColumnSortStatus.Absent, titleSort = EColumnSortStatus.Absent, statusSort = EColumnSortStatus.Absent;
+            switch (sortType)
+            {
+                case EIssuesSort.AUTHOR:
+                    issues = issues.OrderBy(i => i.Author);
+                    authorSort = EColumnSortStatus.Asc;
+                    break;
+                case EIssuesSort.AUTHOR_DESC:
+                    issues = issues.OrderByDescending(i => i.Author);
+                    authorSort = EColumnSortStatus.Desc;
+                    break;
+                case EIssuesSort.TITLE:
+                    issues = issues.OrderBy(i => i.Title);
+                    titleSort = EColumnSortStatus.Asc;
+                    break;
+                case EIssuesSort.TITLE_DESC:
+                    issues = issues.OrderByDescending(i => i.Title);
+                    titleSort = EColumnSortStatus.Desc;
+                    break;
+                case EIssuesSort.STATUS:
+                    issues = issues.OrderBy(i => i.Status);
+                    statusSort = EColumnSortStatus.Asc;
+                    break;
+                case EIssuesSort.STATUS_DESC:
+                    issues = issues.OrderByDescending(i => i.Status);
+                    statusSort = EColumnSortStatus.Desc;
+                    break;
+                case null:
+                default:
+                    issues = issues.OrderBy(i => i.Title);
+                    break;
+            }
+
+            // fill view bag with what to sort with
+            ViewBag.authorSort = authorSort == EColumnSortStatus.Asc ? "author_desc" : "author";
+            ViewBag.titleSort = titleSort == EColumnSortStatus.Asc ? "title_desc" : "title";
+            ViewBag.statusSort = statusSort == EColumnSortStatus.Asc ? "status_desc" : "status";
+
+
+            var list = await issues.ToListAsync();
             ViewData["projectId"] = projectId;
             return View(list);
         }

@@ -44,16 +44,28 @@ else
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.project.Name)
+                @{
+                    // workaround to allow conditionally passing projectId to the link, it's important it's missing entirely, because otherwise it would show issues of project with id = 0
+                    // I don't want to deal with route parameters etc.
+                    var baseDict = new Dictionary<string, object> { ["search"] = ViewData["search"] };
+                    if (ViewData.ContainsKey("projectId") && ViewData["projectId"] != null)
+					{
+						baseDict["projectId"] = Convert.ToInt32(ViewData["projectId"]);
+					}
+                    // else not present
+                }
+                @Html.ActionLink("Project", "Index", "Projects", baseDict, null)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.ActionLink("Title", "Index", "Issues", baseDict.Append(new("sort", ViewBag.titleSort)), null)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Author)
+                @{//@Html.DisplayNameFor(model => model.Author)
+                }
+                @Html.ActionLink("Author", "Index", "Issues", baseDict.Append(new("sort", ViewBag.authorSort)), null)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SubmitDate)
@@ -65,7 +77,7 @@ else
                 @Html.DisplayNameFor(model => model.LastUpdateDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.ActionLink("Status", "Index", "Issues", baseDict.Append(new("sort", ViewBag.statusSort)), null)
             </th>
             <th></th>
         </tr>

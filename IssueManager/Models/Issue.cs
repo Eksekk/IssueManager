@@ -74,7 +74,7 @@ namespace IssueManager.Models
 
         // FIXME: Assignee field as real user!!!
 
-        public List<Comment> _Comments;
+        private List<Comment> _Comments;
         public List<Comment> Comments
         {
             get

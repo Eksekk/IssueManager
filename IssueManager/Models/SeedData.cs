@@ -105,7 +105,398 @@ namespace IssueManager.Models
                     Issues = issues
                 };
 
-                context.Project.AddRange(project);
+                // Example Data for Projects
+                List<Project> exampleProjects = [
+                    new Project
+                    {
+                        Name = "E-commerce Platform",
+                        Description = "An online platform for buying and selling products.",
+                        Issues = new List<Issue>
+                        {
+                            new Issue
+                            {
+                                Title = "Slow sorting of product data",
+                                Description = "Sorting products by price takes too long to complete.",
+                                Author = "Jane Doe",
+                                SubmitDate = DateTime.Now.AddDays(-10),
+                                LastUpdateDate = DateTime.Now.AddDays(-5),
+                                Status = IssueStatus.WORK_IN_PROGRESS,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "John Smith",
+                                        Content = "I've noticed this issue as well.",
+                                        SubmitDate = DateTime.Now.AddDays(-9)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Jane Doe",
+                                        Content = "Working on a solution.",
+                                        SubmitDate = DateTime.Now.AddDays(-5)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Search function not returning accurate results",
+                                Description = "The search function often returns irrelevant results.",
+                                Author = "John Smith",
+                                SubmitDate = DateTime.Now.AddDays(-15),
+                                LastUpdateDate = DateTime.Now.AddDays(-7),
+                                Status = IssueStatus.SUBMITTED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Jane Doe",
+                                        Content = "Can you provide more details?",
+                                        SubmitDate = DateTime.Now.AddDays(-14)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new Project
+                    {
+                        Name = "Mobile Banking App",
+                        Description = "A mobile application for managing bank accounts and transactions.",
+                        Issues = new List<Issue>
+                        {
+                            new Issue
+                            {
+                                Title = "Login failure on certain devices",
+                                Description = "Users are unable to log in on older Android devices.",
+                                Author = "Alice Johnson",
+                                SubmitDate = DateTime.Now.AddDays(-8),
+                                LastUpdateDate = DateTime.Now.AddDays(-3),
+                                Status = IssueStatus.REPRODUCED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Bob Brown",
+                                        Content = "I can reproduce this issue on my Android device.",
+                                        SubmitDate = DateTime.Now.AddDays(-7)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Transaction history not updating",
+                                Description = "Recent transactions are not showing up in the history.",
+                                Author = "Bob Brown",
+                                SubmitDate = DateTime.Now.AddDays(-12),
+                                LastUpdateDate = DateTime.Now.AddDays(-1),
+                                Status = IssueStatus.WORK_IN_PROGRESS,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Alice Johnson",
+                                        Content = "Looking into this issue.",
+                                        SubmitDate = DateTime.Now.AddDays(-10)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Charlie Green",
+                                        Content = "This seems to be affecting many users.",
+                                        SubmitDate = DateTime.Now.AddDays(-9)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new Project
+                    {
+                        Name = "Social Media Platform",
+                        Description = "A platform for connecting and sharing with friends and family.",
+                        Issues = new List<Issue>
+                        {
+                            new Issue
+                            {
+                                Title = "Image upload feature broken",
+                                Description = "Users are unable to upload images to their posts.",
+                                Author = "David Lee",
+                                SubmitDate = DateTime.Now.AddDays(-20),
+                                LastUpdateDate = DateTime.Now.AddDays(-15),
+                                Status = IssueStatus.FIXED,
+                                CloseDate = DateTime.Now.AddDays(-14),
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Eve Black",
+                                        Content = "I'm experiencing this issue as well.",
+                                        SubmitDate = DateTime.Now.AddDays(-19)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "David Lee",
+                                        Content = "The issue has been fixed in the latest update.",
+                                        SubmitDate = DateTime.Now.AddDays(-15)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Messages not being sent",
+                                Description = "Messages are stuck in the outbox and not being delivered.",
+                                Author = "Eve Black",
+                                SubmitDate = DateTime.Now.AddDays(-7),
+                                LastUpdateDate = DateTime.Now.AddDays(-2),
+                                Status = IssueStatus.ACKNOWLEDGED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "David Lee",
+                                        Content = "We're aware of this issue and working on a fix.",
+                                        SubmitDate = DateTime.Now.AddDays(-6)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new Project
+                    {
+                        Name = "Library Management System",
+                        Description = "A system to manage library books, members, and transactions.",
+                        Issues = new List<Issue>
+                        {
+                            new Issue
+                            {
+                                Title = "Book search returns incorrect results",
+                                Description = "Searching for books by title sometimes returns irrelevant results.",
+                                Author = "Michael Scott",
+                                SubmitDate = DateTime.Now.AddDays(-30),
+                                LastUpdateDate = DateTime.Now.AddDays(-28),
+                                Status = IssueStatus.ACKNOWLEDGED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Dwight Schrute",
+                                        Content = "Can confirm this issue.",
+                                        SubmitDate = DateTime.Now.AddDays(-29)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Pam Beesly",
+                                        Content = "This is affecting the catalog search.",
+                                        SubmitDate = DateTime.Now.AddDays(-28)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Unable to add new members",
+                                Description = "The system throws an error when trying to add new members.",
+                                Author = "Jim Halpert",
+                                SubmitDate = DateTime.Now.AddDays(-25),
+                                LastUpdateDate = DateTime.Now.AddDays(-22),
+                                Status = IssueStatus.WORK_IN_PROGRESS,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Pam Beesly",
+                                        Content = "This needs to be fixed ASAP.",
+                                        SubmitDate = DateTime.Now.AddDays(-24)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Overdue fines not being calculated",
+                                Description = "Overdue fines are not being applied to late returns.",
+                                Author = "Angela Martin",
+                                SubmitDate = DateTime.Now.AddDays(-20),
+                                LastUpdateDate = DateTime.Now.AddDays(-19),
+                                Status = IssueStatus.REPRODUCED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Oscar Martinez",
+                                        Content = "I have tested this and can reproduce the issue.",
+                                        SubmitDate = DateTime.Now.AddDays(-19)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "Email notifications not sent",
+                                Description = "Users are not receiving email notifications for overdue books.",
+                                Author = "Kevin Malone",
+                                SubmitDate = DateTime.Now.AddDays(-18),
+                                LastUpdateDate = DateTime.Now.AddDays(-16),
+                                Status = IssueStatus.SUBMITTED
+                            },
+                            new Issue
+                            {
+                                Title = "Incorrect book details displayed",
+                                Description = "Book details page shows incorrect information.",
+                                Author = "Stanley Hudson",
+                                SubmitDate = DateTime.Now.AddDays(-15),
+                                LastUpdateDate = DateTime.Now.AddDays(-13),
+                                Status = IssueStatus.WORK_IN_PROGRESS
+                            },
+                            new Issue
+                            {
+                                Title = "Page not found error",
+                                Description = "Navigating to certain pages results in a 404 error.",
+                                Author = "Phyllis Vance",
+                                SubmitDate = DateTime.Now.AddDays(-12),
+                                LastUpdateDate = DateTime.Now.AddDays(-10),
+                                Status = IssueStatus.FIXED,
+                                CloseDate = DateTime.Now.AddDays(-8),
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Meredith Palmer",
+                                        Content = "The issue seems to be fixed now.",
+                                        SubmitDate = DateTime.Now.AddDays(-7)
+                                    }
+                                }
+                            },
+                            new Issue
+                            {
+                                Title = "System slow during peak hours",
+                                Description = "The system becomes very slow during peak usage hours.",
+                                Author = "Andy Bernard",
+                                SubmitDate = DateTime.Now.AddDays(-10),
+                                LastUpdateDate = DateTime.Now.AddDays(-9),
+                                Status = IssueStatus.WONT_FIX
+                            },
+                            new Issue
+                            {
+                                Title = "Barcode scanner not working",
+                                Description = "The barcode scanner is not recognizing book barcodes.",
+                                Author = "Ryan Howard",
+                                SubmitDate = DateTime.Now.AddDays(-8),
+                                LastUpdateDate = DateTime.Now.AddDays(-6),
+                                Status = IssueStatus.WORK_IN_PROGRESS
+                            },
+                            new Issue
+                            {
+                                Title = "Unable to renew books online",
+                                Description = "Users are unable to renew books through the online portal.",
+                                Author = "Kelly Kapoor",
+                                SubmitDate = DateTime.Now.AddDays(-5),
+                                LastUpdateDate = DateTime.Now.AddDays(-4),
+                                Status = IssueStatus.ACKNOWLEDGED
+                            },
+                            new Issue
+                            {
+                                Title = "Books marked as available are checked out",
+                                Description = "The system shows books as available even though they are checked out.",
+                                Author = "Creed Bratton",
+                                SubmitDate = DateTime.Now.AddDays(-3),
+                                LastUpdateDate = DateTime.Now.AddDays(-2),
+                                Status = IssueStatus.CANNOT_REPRODUCE
+                            },
+                            new Issue
+                            {
+                                Title = "Reservation system not working",
+                                Description = "Users are unable to reserve books.",
+                                Author = "Toby Flenderson",
+                                SubmitDate = DateTime.Now.AddDays(-1),
+                                LastUpdateDate = DateTime.Now,
+                                Status = IssueStatus.SUBMITTED
+                            }
+                        }
+                    },
+                    new Project
+                    {
+                        Name = "Task Management Tool",
+                        Description = "A tool to manage tasks and track progress for teams.",
+                        Issues = new List<Issue>
+                        {
+                            new Issue
+                            {
+                                Title = "Notifications not showing up",
+                                Description = "Users are not receiving notifications for task updates.",
+                                Author = "Jason Taylor",
+                                SubmitDate = DateTime.Now.AddDays(-10),
+                                LastUpdateDate = DateTime.Now.AddDays(-5),
+                                Status = IssueStatus.REPRODUCED,
+                                Comments = new List<Comment>
+                                {
+                                    new Comment
+                                    {
+                                        Author = "Sarah Lee",
+                                        Content = "Same issue here.",
+                                        SubmitDate = DateTime.Now.AddDays(-9)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Tom Brown",
+                                        Content = "Hope this gets fixed soon.",
+                                        SubmitDate = DateTime.Now.AddDays(-8)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Emily White",
+                                        Content = "Facing this problem as well.",
+                                        SubmitDate = DateTime.Now.AddDays(-7)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Daniel Green",
+                                        Content = "Any updates on this?",
+                                        SubmitDate = DateTime.Now.AddDays(-6)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Jason Taylor",
+                                        Content = "Still looking into it.",
+                                        SubmitDate = DateTime.Now.AddDays(-5)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Sarah Lee",
+                                        Content = "Noticed this since the last update.",
+                                        SubmitDate = DateTime.Now.AddDays(-4)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Tom Brown",
+                                        Content = "Please prioritize this.",
+                                        SubmitDate = DateTime.Now.AddDays(-3)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Emily White",
+                                        Content = "Critical issue for our team.",
+                                        SubmitDate = DateTime.Now.AddDays(-2)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Daniel Green",
+                                        Content = "Is there a workaround?",
+                                        SubmitDate = DateTime.Now.AddDays(-1)
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Jason Taylor",
+                                        Content = "Working on a fix, will update soon.",
+                                        SubmitDate = DateTime.Now
+                                    },
+                                    new Comment
+                                    {
+                                        Author = "Sarah Lee",
+                                        Content = "Thanks for the update.",
+                                        SubmitDate = DateTime.Now
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ];
+
+                context.Project.AddRange(exampleProjects.Append(project));
                 context.SaveChanges();
             }
         }
@@ -176,7 +567,7 @@ namespace IssueManager.Models
 
             project.Issues = issues;
 
-            return new();
+            return project;
         }
     }
 }
