@@ -6,19 +6,6 @@
     ViewData["title"] = "Statistics";
 }
 
-@*
-    all of below are in dictionary with same keys as variable names
-
-    List<Project> projects = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).ToListAsync();
-    // calculate various statistics about whole state of IssueManager
-    // for example: number of projects, number of issues, number of comments, etc.
-
-    int projectCount = projects.Count, issueCount = projects.Sum(p => p.Issues.Count), commentCount = projects.Sum(p => p.Issues.Sum(i => i.Comments.Count));
-    double averageIssuesPerProject = (double)issueCount / projectCount, averageCommentsPerIssue = (double)commentCount / issueCount;
-    Dictionary<IssueStatus, int> issuesByStatus = projects.SelectMany(p => p.Issues).GroupBy(i => i.Status).ToDictionary(g => g.Key, g => g.Count());
-    Dictionary<string, int> issuesByAuthor = projects.SelectMany(p => p.Issues).GroupBy(i => i.Author).ToDictionary(g => g.Key, g => g.Count());
-*@
-
 <h1>Statistics</h1>
 
 <div class="row">
