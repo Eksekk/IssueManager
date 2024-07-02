@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -33,15 +34,25 @@ namespace IssueManager.Models
     {
         public int Id { get; set; }
         [DisplayName("Issue Title")] // so that comments view has proper label, don't want to somehow hardcode it in view
+        [StringLength(maximumLength: 60, MinimumLength = 3)]
         public string Title { get; set; }
+        [StringLength(maximumLength: 2000, MinimumLength = 3)]
         public string Description { get; set; }
+        [StringLength(maximumLength: 30, MinimumLength = 3)]
         public string? Author { get; set; }
         [DisplayName("Submit date")]
+        [Past]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? SubmitDate { get; set; }
         [DisplayName("Close date")]
+        [Past]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? CloseDate { get; set; }
         [DisplayName("Last update date")]
+        [Past]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? LastUpdateDate { get; set; }
+        [Required]
         public IssueStatus Status { get; set; } // TODO: make non-nullable
         public Project project { get; set; }
 

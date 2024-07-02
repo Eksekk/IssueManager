@@ -150,8 +150,13 @@ namespace IssueManager.Controllers
         }
 
         // GET: Issues/Create
-        public IActionResult Create(int projectId)
+        public IActionResult Create(int? projectId)
         {
+            if (projectId is null)
+            {
+                this.SetTemporaryMessage("Cannot create an issue not referencing any project. Go to projects page, select issues from there, and try again.", Constants.BootstrapMsgType.Danger);
+                return RedirectToAction(nameof(Index));
+            }
             ViewData["projectId"] = projectId;
             return View();
         }
