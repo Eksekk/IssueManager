@@ -1,0 +1,5 @@
+nagłówki na stronach
+wyeliminować powtarrzalne dane z tabeli
+#tabelka w danych o kolekcjach podrzędnych
+nazwa projektu to link do szczegółów
+w szczeggółach projektu status raportu + statystyka zbiorcza

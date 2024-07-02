@@ -4,7 +4,7 @@
     ViewData["Title"] = "Issue details";
 }
 
-<h1>Details</h1>
+<h1>Issue details</h1>
 
 <div>
     <h4>Issue</h4>
@@ -71,17 +71,29 @@
 			Comments
             </dt>
 		<dd class="col-sm-10">
-            <ul>
-                @foreach (Comment comment in Model.Comments)
-				{
-                    string content = comment.Content;
-                    bool longerThan100 = content.Length > 100;
-                    content = longerThan100 ? content.Substring(0, 100) + "..." : content;
-                    <li>
-                        <a asp-controller="Comments" asp-action="Details" asp-route-id="@comment.Id">@content</a>
-					</li>
-				}
-            </ul>
+            <table>
+                <thead>
+					<tr>
+						<th>@Html.DisplayNameFor(model => model.Comments[0].Author)</th>
+						<th>@Html.DisplayNameFor(model => model.Comments[0].Content)</th>
+						<th>@Html.DisplayNameFor(model => model.Comments[0].SubmitDate)</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (Comment comment in Model.Comments)
+					{
+                        string content = comment.Content;
+                        bool longerThan100 = content.Length > 100;
+                        content = longerThan100 ? content.Substring(0, 100) + "..." : content;
+						<tr>
+							<td>@Html.DisplayFor(modelItem => comment.Author)</td>
+							<td>@Html.ActionLink(comment.Content, "Details", "Comments", new { id = comment.Id }, null)</td>
+							<td>@Html.DisplayFor(modelItem => comment.SubmitDate)</td>
+						</tr>
+					}
+				</tbody>
+            </table>
+
 		</dd>
     </dl>
 </div>

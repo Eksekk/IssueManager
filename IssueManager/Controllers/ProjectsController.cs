@@ -16,7 +16,7 @@ namespace IssueManager.Controllers
 	{
 		private readonly IssueManagerContext _context;
 
-		private void ProjectDoesntExistMsg() => this.SetTemporaryMessage("Provided project doesn't exist in the database.", Constants.BootstrapMsgType.Danger);
+		private void ProjectDoesntExistMsg() => this.SetTemporaryMessage("Provided projectInDb doesn't exist in the database.", Constants.BootstrapMsgType.Danger);
 
         public ProjectsController(IssueManagerContext context)
 		{
@@ -120,7 +120,7 @@ namespace IssueManager.Controllers
 					if (!ProjectExists(projectInDb.Id))
 					{
                         // not using ProjectDoesntExistMsg() here, because message is different
-                        this.SetTemporaryMessage("Provided project was asynchronously deleted from the database.", Constants.BootstrapMsgType.Danger);
+                        this.SetTemporaryMessage("Provided projectInDb was asynchronously deleted from the database.", Constants.BootstrapMsgType.Danger);
                         return NotFound();
 					}
 					else
@@ -144,7 +144,8 @@ namespace IssueManager.Controllers
 			}
 
 			var project = await _context.Project
-				.FirstOrDefaultAsync(m => m.Id == id);
+				.Include(p => p.Issues)
+                .FirstOrDefaultAsync(m => m.Id == id);
 			if (project == null)
 			{
                 return NotFound();
@@ -158,23 +159,11 @@ namespace IssueManager.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
-			var project = await _context.Project.FindAsync(id);
-			if (project != null)
+			var projectInDb = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).FirstOrDefaultAsync(p => p.Id == id);
+            if (projectInDb != null)
 			{
-				/*
-                 copilot:
-                Note that for the cascading delete to work, you need to have set up your database schema correctly. In Entity Framework, you can configure cascading deletes in the OnModelCreating method in your DbContext class:
-                protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Project>()
-        .HasMany(p => p.Tasks)
-        .WithOne(t => t.Project)
-        .OnDelete(DeleteBehavior.Cascade);
-}
-*/
-                var projectToRemove = await _context.Project.Include(p => p.Issues).ThenInclude(i => i.Comments).SingleAsync(p => p.Id == id);
-                _context.Project.Remove(projectToRemove);
-				this.SetTemporaryMessage($"Project '{project.Name}' deleted successfully.", Constants.BootstrapMsgType.Success);
+                _context.Project.Remove(projectInDb);
+				this.SetTemporaryMessage($"Project '{projectInDb.Name}' deleted successfully.", Constants.BootstrapMsgType.Success);
             }
 			else
 			{

@@ -25,6 +25,10 @@ namespace IssueManager.Controllers
         public async Task<IActionResult> Index(int? issueId, string search/*, bool? byTitle*/, string sort)
         {
             ViewData["issueId"] = issueId;
+            // providing this value here instead of determining it in view, because view cannot do it if there isn't any issue in result sequence
+            ViewData["issueName"] = issueId is null ? "All issues" : _context.Issue.Find(issueId).Title;
+
+
             ViewData["search"] = search;
             // empty string means no filtering
                 Expression<Func<Comment, bool>> searchPredicate = c => string.IsNullOrEmpty(search) || c.Content.Contains(search);
@@ -88,6 +92,7 @@ namespace IssueManager.Controllers
                 comment.Issue = await _context.Issue.FindAsync(issueId);
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
+                this.SetTemporaryMessage("Comment created successfully.", Constants.BootstrapMsgType.Success);
                 return RedirectToAction(nameof(Index), new { issueId = issueId });
             }
             return View(comment);
@@ -183,10 +188,11 @@ namespace IssueManager.Controllers
             if (comment != null)
             {
                 _context.Comment.Remove(comment);
+                await _context.SaveChangesAsync();
+                this.SetTemporaryMessage("Comment deleted successfully.", Constants.BootstrapMsgType.Success);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
 
         private bool CommentExists(int id)

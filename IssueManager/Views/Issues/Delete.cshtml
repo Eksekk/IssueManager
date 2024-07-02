@@ -4,7 +4,7 @@
     ViewData["Title"] = "Delete issue";
 }
 
-<h1>Delete</h1>
+<h1>Delete issue</h1>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -12,8 +12,11 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.project.Id">@Html.DisplayNameFor(model => model.project.Name)</a>
+            Project name
         </dt>
+        <dd class = "col-sm-10">
+            <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.project.Id">@Html.DisplayFor(model => model.project.Name)</a>
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Title)
         </dt>
@@ -56,6 +59,20 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Status)
         </dd>
+        <!-- comment list -->
+		<dt class="col-sm-2">
+			Comments
+		</dt>
+		<dd class="col-sm-10">
+			<ul>
+				@foreach (var comment in Model.Comments)
+				{
+					<li>
+						<a asp-controller="Comments" asp-action="Details" asp-route-id="@comment.Id">@comment.Content</a>
+					</li>
+				}
+			</ul>
+		</dd>
     </dl>
     
     <form asp-action="Delete">

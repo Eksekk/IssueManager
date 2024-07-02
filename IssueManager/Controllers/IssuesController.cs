@@ -65,6 +65,8 @@ namespace IssueManager.Controllers
         {
             ViewData["search"] = search;
             ViewData["projectId"] = projectId;
+            // providing this value here instead of determining it in view, because view cannot do it if there isn't any project in result sequence
+            ViewData["projectName"] = projectId is null ? "All projects" : _context.Project.Find(projectId).Name;
 
             if (search != null)
             {
@@ -141,6 +143,7 @@ namespace IssueManager.Controllers
                 .Include(i => i.project)
                 .Include(i => i.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (issue == null)
             {
                 return NotFound();
@@ -154,10 +157,11 @@ namespace IssueManager.Controllers
         {
             if (projectId is null)
             {
-                this.SetTemporaryMessage("Cannot create an issue not referencing any project. Go to projects page, select issues from there, and try again.", Constants.BootstrapMsgType.Danger);
-                return RedirectToAction(nameof(Index));
+                //this.SetTemporaryMessage("Cannot create an dbIssue not referencing any project. Go to projects page, select issues from there, and try again.", Constants.BootstrapMsgType.Danger);
+                //return RedirectToAction(nameof(Index));
             }
             ViewData["projectId"] = projectId;
+            ViewBag.Projects = _context.Project.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList();
             return View();
         }
 
@@ -169,7 +173,7 @@ namespace IssueManager.Controllers
         // values that are assigned below are omitted from bind list
         public async Task<IActionResult> Create([Bind("Title,Description,Author")] Issue issue)
         {
-            if (!int.TryParse(Request.Form["projectId"], out int projectId))
+            if (!int.TryParse(Request.Form["project.Id"], out int projectId))
             {
                 this.SetTemporaryMessage("Invalid project id", Constants.BootstrapMsgType.Danger);
                 return View(issue);
@@ -213,7 +217,7 @@ namespace IssueManager.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Author,Status")] Issue issue)
         {
             ModelState.Clear(); // we don't care about validation of part of data, we validate the whole entity later
-            //             if (issue.Status == null)
+            //             if (dbIssue.Status == null)
             //             {
             //                 ModelState.AddModelError("Status", "Status is required");
             //             }
@@ -278,6 +282,8 @@ namespace IssueManager.Controllers
             }
 
             var issue = await _context.Issue
+                .Include(i => i.project)
+                .Include(i => i.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (issue == null)
             {
@@ -292,15 +298,15 @@ namespace IssueManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var issue = await _context.Issue.FindAsync(id);
-            if (issue != null)
+            var dbIssue = await _context.Issue.Include(i => i.Comments).FirstOrDefaultAsync(i => i.Id == id);
+            if (dbIssue != null)
             {
-                var dbIssue = _context.Issue.Include(i => i.Comments).SingleAsync(i => i.Id == id);
                 _context.Remove(dbIssue);
+                await _context.SaveChangesAsync();
+                this.SetTemporaryMessage("Issue deleted successfully.", Constants.BootstrapMsgType.Success);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
 
         private bool IssueExists(int id)

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Submit issue";
 }
 
-<h1>Create</h1>
+<h1>Submit issue</h1>
 
 <h4>Issue</h4>
 <hr />
@@ -27,6 +27,16 @@
                 <label asp-for="Author" class="control-label"></label>
                 <input asp-for="Author" class="form-control" />
                 <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+            @*
+
+            ViewData["projectId"] = projectId;
+            ViewBag.Projects = _context.Project.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList();
+            *@
+            <div class="form-group">
+				<label class="control-label">Project</label>
+				@Html.DropDownListFor(model => model.project.Id, new SelectList(ViewBag.Projects, "Value", "Text"), string.Empty, new { @class = "form-control" })
+				<span asp-validation-for="project.Id" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

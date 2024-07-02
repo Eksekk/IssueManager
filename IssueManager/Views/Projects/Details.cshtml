@@ -4,10 +4,9 @@
     ViewData["Title"] = "Project details";
 }
 
-<h1>Details</h1>
+<h1>Project details</h1>
 
 <div>
-    <h4>Project</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -26,14 +25,60 @@
 			Current project issues
         </dt>
         <dd class = "col-sm-10">
-			<ul>
-				@foreach (var issue in Model.Issues)
-				{
-					<li>
-						<a asp-controller="Issues" asp-action="Details" asp-route-id="@issue.Id">@issue.Title</a>
-					</li>
-				}
-			</ul>
+			<table>
+                <thead>
+                    <tr>
+						<th>
+							@Html.DisplayNameFor(model => model.Issues[0].Title)
+						</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Issues[0].Description)
+                        </th>
+                        <th>
+							@Html.DisplayNameFor(model => model.Issues[0].Author)
+                        </th>
+						<th>
+							@Html.DisplayNameFor(model => model.Issues[0].SubmitDate)
+						</th>
+						<th>
+							@Html.DisplayNameFor(model => model.Issues[0].Status)
+						</th>
+					</tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Issues)
+                    {
+						<tr>
+							<td>
+								<a asp-controller="Issues" asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Description)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Author)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.SubmitDate)
+							</td>
+							<td>
+								@{
+									var str = Issue.getIssueStatusEnumText((IssueStatus)item.Status);
+									var blocked = item.Status == IssueStatus.CLOSED || item.Status == IssueStatus.WONT_FIX || item.Status == IssueStatus.CANNOT_REPRODUCE;
+									if (blocked)
+									{
+										<strike>@Html.DisplayFor(modelItem => str)</strike>
+									}
+									else
+									{
+										<u>@Html.DisplayFor(modelItem => str)</u>
+									}
+								}
+							</td>
+						</tr>
+					}
+                </tbody>
+			</table>
         </dd>
     </dl>
 </div>
