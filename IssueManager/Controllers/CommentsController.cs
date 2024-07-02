@@ -37,6 +37,7 @@ namespace IssueManager.Controllers
                 .Include(c => c.Issue)
                 .Where(c => issueId == null || c.Issue.Id == issueId)
                 .Where(searchPredicate)
+                .OrderBy(c => c.SubmitDate)
                 .ToListAsync()
              );
         }

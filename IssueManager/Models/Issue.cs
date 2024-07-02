@@ -75,6 +75,14 @@ namespace IssueManager.Models
             }
         }
 
+        public bool Blocked
+        {
+            get
+            {
+                return Status == IssueStatus.CLOSED || Status == IssueStatus.WONT_FIX || Status == IssueStatus.CANNOT_REPRODUCE;
+            }
+        }
+
         public static string getIssueStatusEnumText(IssueStatus status)
         {
             return EnumHelpers.GetValueName(status);

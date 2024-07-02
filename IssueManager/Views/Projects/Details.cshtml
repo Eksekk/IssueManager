@@ -21,6 +21,36 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
+		<!-- some statistics, like amount of blocked issues and nonblocked issues -->
+		<dt class = "col-sm-2">
+			Amount of blocked issues
+		</dt>
+		<dd class = "col-sm-10">
+			@{
+				var blockedIssues = Model.Issues.Where(i => i.Blocked).Count();
+				@blockedIssues
+			}
+		</dd>
+		<dt class = "col-sm-2">
+			Amount of nonblocked issues
+		</dt>
+		<dd class = "col-sm-10">
+			@{
+				var nonblockedIssues = Model.Issues.Where(i => !i.Blocked).Count();
+				@nonblockedIssues
+			}
+		</dd>
+		<!--count of fixed-->
+		<dt class= "col-sm-2">
+			Amount of fixed issues
+		</dt>
+		<dd class = "col-sm-10">
+			@{
+				var fixedIssues = Model.Issues.Where(i => i.Status == IssueStatus.FIXED).Count();
+				@fixedIssues
+			}
+		</dd>
+
         <dt class = "col-sm-2">
 			Current project issues
         </dt>
